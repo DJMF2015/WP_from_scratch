@@ -1,32 +1,76 @@
 <?php get_header(); ?>
 
-<div class="row">
+	<div class="row">
 
 	<div class="col-sm-12">
 
-		<?php
-		if ( have_posts() ) : while ( have_posts() ) : the_post();
+<?php 
+	if ( have_posts() ) : while ( have_posts() ) : the_post();
+  	
+get_template_part( 'content', get_post_format() );
+  
+endwhile; endif; 
+?>
 
-		get_template_part( 'content', get_post_format() );
+<?php 
+  $args = array(
+	'post_type' => 'your_post',
+);  
+$your_loop = new WP_Query( $args ); if ( $your_loop->have_posts() ) : while ( $your_loop->have_posts() ) : $your_loop->the_post();
+$meta = get_post_meta( $post->ID, 'your_fields', true ); ?>
+<!--These will all go in the $your_loop query. Make sure $meta = get_post_meta( $post->ID, 'your_fields', true ); is in your loop.-->
+<h1>Title</h1>
+<?php the_title(); ?>
 
-	endwhile; endif;
-	?>
-	<!-- utilises custom post type from functions.php -->
-	<?php
-	$args = array(
-		'post_type'=> 'my post',
-	);
-   $my_loop = new WP_Query($args);
-	if ($my_loop->have_posts()); while(	$custom_loop->have_post()) :
-		$my_loop->the_post();
-		$meta = get_post_meta($post->ID, 'my_fields', true);
+<h1>Content</h1>
+<?php the_content(); ?>
 
-		// <--content of post here-->
-		?>
-	<?php endwhile;	endif; //issue here...
-	wp_reset_postdata();  ?>
+<h1>Excerpt</h1>
+<?php the_excerpt(); ?>
+
+<h1>Text Input</h1>
+<?php  if (is_array($meta) && isset($meta['text'])){ echo $meta['text']; } 
+?>
+
+<h1>Textarea</h1>
+<?php  if (is_array($meta) && isset($meta['textarea'])){ echo $meta['textarea']; } 
+?>
+
+
+<h1>Checkbox</h1>
+<?php if ( $meta['checkbox'] === 'checkbox') { ?>
+Checkbox is checked.
+<?php } else { ?> 
+Checkbox is not checked. 
+<?php } ?>
+
+
+<h1>Select Menu</h1>
+<p>The actual value selected.</p>
+<?php echo $meta['select']; ?>
+
+<p>Switch statement for options.</p>
+<?php 
+	switch ( $meta['select'] ) {
+		case 'option-one':
+			echo 'Option One';
+			break;
+		case 'option-two':
+			echo 'Option Two';
+			break;
+		default:
+			echo 'No option selected';
+			break;
+	} 
+?>
+
+<h1>Image</h1>
+<img src="<?php echo $meta['image']; ?>">
+
+
+<?php endwhile; endif; wp_reset_postdata(); ?>
+
 </div> <!-- /.col -->
 
 </div> <!-- /.row -->
-
 <?php get_footer(); ?>
